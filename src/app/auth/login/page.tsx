@@ -41,34 +41,8 @@ const LoginPage = () => {
   };
   return (
     <div className="flex min-h-screen items-center justify-center max-w-2xl mx-auto">
-      {/* first div */}
-      <div className="w-1/2 bg-gradient-to-br from-[#2159ab] to-[#143566] p-4 rounded-md text-white space-y-4">
-        {/* image */}
-        <div className="flex justify-center w-full mt-10">
-          <Image
-            src="/logo.png"
-            width={120}
-            height={120}
-            alt="logo"
-            className=""
-          />
-        </div>
-        {/* title section */}
-        <div className="w-full text-center font-mukta mb-30">
-          <p className=" text-lg ">नेपाल सरकार</p>
-          <hr className="bg-white w-1/2 mx-auto my-6" />
-          <p className=" font-bold text-2xl mb-2">सामाजिक सुरक्षा एकाई</p>
-          <p className="">मा तपाईलाई स्वागत छ</p>
-        </div>
-        {/* credit area */}
-        <div className="font-mukta text-md text-center">
-          <Link href="https://rabinthami.com.np" target="_bank">
-            &copy; रविन थामी{" "}
-          </Link>
-        </div>
-      </div>
       {/* second div */}
-      <div className="w-1/2 h-auto  flex items-center justify-center shadow rounded-r-md p-5">
+      <div className="w-1/2 h-auto flex shadow rounded-r-md p-5">
         <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-6">
             <div className="grid gap-3">
@@ -88,14 +62,8 @@ const LoginPage = () => {
               )}
             </div>
             <div className="grid gap-3">
-              <div className="flex items-center">
+              <div className="flex ">
                 <Label htmlFor="password">Password</Label>
-                <a
-                  href="#"
-                  className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                >
-                  Forgot your password?
-                </a>
               </div>
               <Input
                 id="password"
@@ -110,6 +78,9 @@ const LoginPage = () => {
                   {errors.password.message}
                 </p>
               )}
+              <Button size="sm" variant="link" asChild className="px-0 w-fit">
+                <Link href="/auth/reset">Forget Password</Link>
+              </Button>
             </div>
             <SuccessMessage message={success} />
             <ErrorMessage message={error} />

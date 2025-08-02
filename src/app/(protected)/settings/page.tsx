@@ -1,19 +1,21 @@
-import { auth, signOut } from "@/auth";
-import { json } from "zod";
-const settings = async () => {
-  const session = await auth();
+"use client";
+import { auth } from "@/auth";
+
+import { logout } from "@/actions/logout";
+import { Button } from "@/components/ui/button";
+import { useCurrentUser } from "@/hooks/use-current-user";
+
+const settings = () => {
+  const user = useCurrentUser();
+
+  const onClick = () => {
+    logout();
+  };
+
   return (
     <div>
-      {JSON.stringify(session)}
-
-      <form
-        action={async () => {
-          "use server";
-          await signOut();
-        }}
-      >
-        <button>Signout</button>
-      </form>
+      {JSON.stringify(user)}
+      <Button onClick={logout}>Logout</Button>
     </div>
   );
 };

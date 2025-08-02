@@ -24,17 +24,23 @@ To get started with this template, follow these steps:
    cd nextjs-starter-template-with-auth
    ```
 
-2. **Install dependencies:**
+2. **Run the setup script:**
 
-   This project uses `pnpm` as the package manager.
+   This project includes a setup script that will guide you through the initial configuration.
 
    ```bash
-   pnpm install
+   node cli/index.js
    ```
+
+   The script will prompt you to:
+   - Rename the project.
+   - Choose a dependency installation strategy.
+
+   It will also initialize a new Git repository and create an `.env.example` file for you.
 
 3. **Set up environment variables:**
 
-   Create a `.env` file in the root of the project and add the following environment variables:
+   Create a `.env` file by copying the `.env.example` file and add the following environment variables:
 
    ```env
    # Prisma

@@ -46,3 +46,12 @@ model Account {
 
   @@id([provider, providerAccountId])
 }
+
+model PasswordResetToken {
+  id     String   @id @default(cuid())
+  email  String
+  token  String   @unique
+  expire DateTime
+
+  @@unique([email, token])
+}
