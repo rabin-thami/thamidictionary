@@ -1,110 +1,163 @@
 "use client";
-
-import { useState, useTransition } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { loginSchema } from "@/schema/index.Schema";
-import * as z from "zod";
-import Image from "next/image";
-import Link from "next/link";
+import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ErrorMessage, SuccessMessage } from "@/components/ui/customMessage";
-import { login } from "@/actions/login";
-import { LoaderCircle } from "lucide-react";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import type z from "zod";
+import type { StatusMessage } from "@/types";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { loginSchema } from "@/schema/indexSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CircleCheckBig, CircleX, LoaderCircle } from "lucide-react";
+import { loginAction } from "@/action";
 
 const LoginPage = () => {
+  const [message, setMessage] = useState<StatusMessage | null>(null);
   const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | undefined>("");
-  const [success, setSuccess] = useState<string | undefined>("");
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<z.infer<typeof loginSchema>>({
+
+  //function to handle form
+  const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
-  const onSubmit = (data: z.infer<typeof loginSchema>) => {
+
+  //function to handle form submit
+  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
     startTransition(() => {
-      login(data).then((data) => {
-        if (data) {
-          setError(data.error);
-          //setSuccess(data.success);
+      setMessage(null);
+      loginAction(values).then((data) => {
+        if (data?.error) {
+          setMessage({ type: "error", message: data.error || "" });
+        } else if (data?.success && data?.redirect) {
+          // Redirect after successful login
+          window.location.href = data.redirect;
         }
       });
     });
   };
-  return (
-    <div className="flex min-h-screen items-center justify-center max-w-2xl mx-auto">
-      {/* second div */}
-      <div className="w-1/2 h-auto flex shadow rounded-r-md p-5">
-        <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
-          <div className="flex flex-col gap-6">
-            <div className="grid gap-3">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="email@example.com"
-                {...register("email")}
-                aria-invalid={!!errors.email}
-                required
-              />
-              {errors.email && (
-                <p className="text-sm text-destructive">
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
-            <div className="grid gap-3">
-              <div className="flex ">
-                <Label htmlFor="password">Password</Label>
-              </div>
-              <Input
-                id="password"
-                type="password"
-                required
-                {...register("password")}
-                placeholder="your password"
-                aria-invalid={!!errors.password}
-              />
-              {errors.password && (
-                <p className="text-sm text-destructive">
-                  {errors.password.message}
-                </p>
-              )}
-              <Button size="sm" variant="link" asChild className="px-0 w-fit">
-                <Link href="/auth/reset">Forget Password</Link>
-              </Button>
-            </div>
-            <SuccessMessage message={success} />
-            <ErrorMessage message={error} />
 
-            <div className="flex flex-col gap-3 ">
-              <Button
-                type="submit"
-                className="w-full bg-custom-primary hover:bg-custom-primary/80 hover:cursor-pointer"
-              >
-                {isPending ? (
-                  <LoaderCircle className="animate-spin" />
-                ) : (
-                  "Login"
-                )}
-              </Button>
-            </div>
+  return (
+    <div className="bg-muted flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
+      <div className="w-full max-w-sm md:max-w-sm">
+        <div className="flex flex-col gap-6">
+          <Card className="overflow-hidden p-0">
+            <CardContent className="grid p-0 ">
+              <Form {...form}>
+                <form
+                  className="p-6 md:p-8"
+                  onSubmit={form.handleSubmit(onSubmit)}
+                >
+                  <div className="flex flex-col gap-6">
+                    <div className="flex flex-col items-center text-center">
+                      <h1 className="text-2xl font-bold">Welcome back</h1>
+                      <p className="text-muted-foreground text-balance">
+                        Login to your SSU account
+                      </p>
+                    </div>
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel htmlFor="email">Email</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="email"
+                              placeholder="email@mail.com"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex justify-between w-full">
+                            <FormLabel htmlFor="password">Password</FormLabel>
+                            <div className="text-sm">
+                              <a
+                                href="/auth/reset"
+                                className="text-primary hover:underline"
+                              >
+                                Forgot Password?
+                              </a>
+                            </div>
+                          </div>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="password"
+                              placeholder="*******"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {message && (
+                      <Alert
+                        variant={
+                          message.type === "error" ? "destructive" : "success"
+                        }
+                        timeout={5000}
+                        onTimeout={() => setMessage(null)}
+                      >
+                        {message.type === "error" ? (
+                          <CircleX className="h-4 w-4" />
+                        ) : (
+                          <CircleCheckBig className="h-4 w-4" />
+                        )}
+
+                        <AlertDescription>{message.message}</AlertDescription>
+                      </Alert>
+                    )}
+                    <Button type="submit" className="w-full">
+                      {isPending ? (
+                        <LoaderCircle className="animate-spin" />
+                      ) : (
+                        "Login"
+                      )}
+                    </Button>
+                    <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
+                      <span className="bg-card text-muted-foreground relative z-10 px-2">
+                        Or
+                      </span>
+                    </div>
+                    <div className="text-center text-sm">
+                      Don&apos;t have an account?{" "}
+                      <a href="/" className="underline underline-offset-4">
+                        Contact Admin
+                      </a>
+                    </div>
+                  </div>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+          <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
+            By clicking continue, you agree to our{" "}
+            <a href="/">Terms of Service</a> and <a href="/">Privacy Policy</a>.
           </div>
-          <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <a href="#" className="underline underline-offset-4">
-              Contact Admin
-            </a>
-          </div>
-        </form>
+        </div>
       </div>
     </div>
   );

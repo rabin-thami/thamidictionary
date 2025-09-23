@@ -1,24 +1,27 @@
-import { getUserByEmail } from "@/data/user";
-import { loginSchema } from "@/schema/index.Schema";
+// auth.config.ts (NO Prisma here!)
 import type { NextAuthConfig } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
+import bcryptjs from "bcryptjs";
+import { loginSchema } from "@/schema/indexSchema";
+import { getUserByEmail } from "@/helper";
 
 export default {
   providers: [
     Credentials({
       async authorize(credentials) {
-        const validatedFields = loginSchema.safeParse(credentials);
+        const validationFields = loginSchema.safeParse(credentials);
 
-        if (validatedFields.success) {
-          const { email, password } = validatedFields.data;
-
+        if (validationFields.success) {
+          const { email, password } = validationFields.data;
           const user = await getUserByEmail(email);
           if (!user || !user.password) return null;
 
-          const passwordMatch = await bcrypt.compare(password, user.password);
+          const isPasswordMatch = await bcryptjs.compare(
+            password,
+            user.password,
+          );
 
-          if (passwordMatch) return user;
+          if (isPasswordMatch) return user;
         }
         return null;
       },

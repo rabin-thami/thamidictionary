@@ -1,39 +1,47 @@
-import authConfig from "@/auth.config";
 import NextAuth from "next-auth";
+import authConfig from "@/auth.config";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { db } from "@/lib/db";
-import { getUserById } from "@/data/user";
-import { UserRole } from "@prisma/client";
+import { getUserById } from "@/helper";
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: PrismaAdapter(db),
+  session: {
+    strategy: "jwt",
+    maxAge: 10 * 60,
+  },
+  pages: {
+    signIn: "/auth/login",
+    error: "/auth/error",
+  },
+  ...authConfig,
   callbacks: {
-    async jwt({ token }) {
+    async jwt({ token, user }) {
       if (!token.sub) return token;
 
       const existingUser = await getUserById(token.sub);
       if (!existingUser) return token;
 
-      token.role = existingUser.role;
-
       return token;
     },
-    async session({ session, token }) {
-      // console.log({ sessionToken: token });
 
+    async session({ token, session }) {
       if (token.sub && session.user) {
         session.user.id = token.sub;
+        session.user.name = token.name || "";
+        session.user.email = token.email || "";
+        session.user.image = token.picture || "";
       }
-
-      if (token.role && session.user) {
-        session.user.role = token.role as UserRole;
-      }
-
       return session;
     },
+
+    // Add a redirect callback to handle post-login redirects
+    async redirect({ url, baseUrl }) {
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
+    },
   },
-  adapter: PrismaAdapter(db),
-  session: {
-    strategy: "jwt",
-  },
-  ...authConfig,
 });

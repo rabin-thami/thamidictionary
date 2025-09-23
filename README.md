@@ -1,82 +1,36 @@
-# Next.js Starter Template with Authentication
-
-This is a starter template for building Next.js applications with a complete authentication system. It includes session handling, protected routes, and a modern technology stack to get you up and running quickly.
-
-## Features
-
-- **Next.js 15:** The latest version of the React framework for production.
-- **Authentication:** A complete authentication system built with NextAuth.js, including login, logout, and session management.
-- **Protected Routes:** Middleware to protect routes and redirect unauthenticated users.
-- **Prisma:** A next-generation ORM for Node.js and TypeScript.
-- **PostgreSQL:** A powerful, open-source object-relational database system.
-- **Tailwind CSS:** A utility-first CSS framework for rapid UI development.
-- **TypeScript:** A typed superset of JavaScript that compiles to plain JavaScript.
-- **Latest Dependencies:** The `package.json` is configured to use the latest versions of all dependencies, ensuring you always have the most up-to-date features and security patches.
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
-To get started with this template, follow these steps:
+First, run the development server:
 
-1. **Clone the repository:**
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-   ```bash
-   git clone https://github.com/rabin-thami/nextjs-starter-template-with-auth.git
-   cd nextjs-starter-template-with-auth
-   ```
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-2. **Run the setup script:**
+You can start editing the page by modifying `app/index.ts`. The page auto-updates as you edit the file.
 
-   This project includes a setup script that will guide you through the initial configuration.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-   ```bash
-   node cli/index.js
-   ```
+## Learn More
 
-   The script will prompt you to:
-   - Rename the project.
-   - Choose a dependency installation strategy.
+To learn more about Next.js, take a look at the following resources:
 
-   It will also initialize a new Git repository and create an `.env.example` file for you.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-3. **Set up environment variables:**
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-   Create a `.env` file by copying the `.env.example` file and add the following environment variables:
+## Deploy on Vercel
 
-   ```env
-   # Prisma
-   DATABASE_URL="postgresql://user:password@host:port/db?schema=public"
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-   # NextAuth.js
-   AUTH_SECRET="your-auth-secret"
-   ```
-
-   Replace the placeholder values with your actual database connection string and a secret for NextAuth.js. You can generate a secret using the following command:
-
-   ```bash
-   openssl rand -base64 32
-   ```
-
-4. **Run database migrations:**
-
-   ```bash
-   pnpm prisma migrate dev
-   ```
-
-5. **Run the development server:**
-
-   ```bash
-   pnpm dev
-   ```
-
-   Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-## Available Scripts
-
-- `pnpm dev`: Runs the development server.
-- `pnpm build`: Creates a production build of the application.
-- `pnpm start`: Starts the production server.
-- `pnpm lint`: Lints the codebase for errors.
-
-## Contributing
-
-Contributions are welcome! Please feel free to open an issue or submit a pull request.
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
