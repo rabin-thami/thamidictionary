@@ -15,6 +15,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     error: "/auth/error",
   },
   ...authConfig,
+  debug: false, // turn off verbose NextAuth logs in dev
+  logger: {
+    error() {
+      /* no-op to suppress stack traces */
+    },
+    warn() {
+      /* no-op */
+    },
+    debug() {
+      /* no-op */
+    },
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (!token.sub) return token;

@@ -24,3 +24,27 @@ export const loginSchema = z.object({
     ),
   password: z.string().min(2, { message: "Please enter a valid password" }),
 });
+
+export const signupSchema = z.object({
+  name: z.string().min(2, { message: "Please enter a valid name" }),
+  email: z
+    .string()
+    .email({ message: "Please enter a valid email address" })
+    .refine(
+      (email) => {
+        const domain = email.split("@")[1];
+        return mainstreamEmailProviders.includes(domain);
+      },
+      {
+        message: "Only mainstream emails are allowed.",
+      },
+    ),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters long")
+    .max(32, "Password must be a maximum of 32 characters")
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).+$/,
+      "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
+    ),
+});

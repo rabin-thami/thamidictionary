@@ -15,36 +15,36 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { loginSchema } from "@/schema/indexSchema";
+import { signupSchema } from "@/schema/indexSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CircleCheckBig, CircleX, LoaderCircle } from "lucide-react";
-import { loginAction } from "@/action";
+import { loginAction, signupAction } from "@/action";
 import Link from "next/link";
 
-const LoginPage = () => {
+const SignupPage = () => {
   const [message, setMessage] = useState<StatusMessage | null>(null);
   const [isPending, startTransition] = useTransition();
 
   //function to handle form
-  const form = useForm<z.infer<typeof loginSchema>>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<z.infer<typeof signupSchema>>({
+    resolver: zodResolver(signupSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
     },
   });
 
   //function to handle form submit
-  const onSubmit = async (values: z.infer<typeof loginSchema>) => {
+  const onSubmit = async (values: z.infer<typeof signupSchema>) => {
     startTransition(() => {
       setMessage(null);
-      loginAction(values).then((data) => {
+      signupAction(values).then((data) => {
         if (data?.error) {
           setMessage({ type: "error", message: data.error || "" });
-        } else if (data?.success && data?.redirect) {
-          // Redirect after successful login
-          window.location.href = data.redirect;
+        } else {
+          setMessage({ type: "success", message: data.error || "" });
         }
       });
     });
@@ -63,11 +63,30 @@ const LoginPage = () => {
                 >
                   <div className="flex flex-col gap-6">
                     <div className="flex flex-col items-center text-center">
-                      <h1 className="text-2xl font-bold">Welcome back</h1>
+                      <h1 className="text-2xl font-bold">Get started</h1>
                       <p className="text-muted-foreground text-balance">
-                        Login to your Acme Inc account
+                        Create a new account
                       </p>
                     </div>
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel htmlFor="name">Name</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="text"
+                              id="name"
+                              placeholder="John Doe"
+                              tabIndex={0}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     <FormField
                       control={form.control}
                       name="email"
@@ -94,15 +113,6 @@ const LoginPage = () => {
                         <FormItem>
                           <div className="flex justify-between w-full">
                             <FormLabel htmlFor="password">Password</FormLabel>
-                            <div className="text-sm">
-                              <a
-                                href="/auth/reset"
-                                className="text-primary hover:underline"
-                                tabIndex={0}
-                              >
-                                Forgot Password?
-                              </a>
-                            </div>
                           </div>
                           <FormControl>
                             <Input
@@ -116,7 +126,6 @@ const LoginPage = () => {
                         </FormItem>
                       )}
                     />
-
                     {message && (
                       <Alert
                         variant={
@@ -188,10 +197,10 @@ const LoginPage = () => {
                     <div className="text-center text-sm">
                       Don&apos;t have an account?{" "}
                       <Link
-                        href="/auth/signup"
+                        href="/auth/login"
                         className="underline underline-offset-4"
                       >
-                        Sign up
+                        Sign In
                       </Link>
                     </div>
                   </div>
@@ -209,4 +218,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default SignupPage;
