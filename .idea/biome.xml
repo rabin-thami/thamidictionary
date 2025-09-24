@@ -16,12 +16,12 @@
         <option value=".jsonc" />
         <option value=".svelte" />
         <option value=".html" />
-        <option value=".ts" />
         <option value=".mts" />
         <option value=".cts" />
         <option value=".tsx" />
         <option value=".vue" />
         <option value=".prisma" />
+        <option value=".ts" />
       </list>
     </option>
   </component>

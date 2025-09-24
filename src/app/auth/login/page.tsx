@@ -95,13 +95,13 @@ const LoginPage = () => {
                           <div className="flex justify-between w-full">
                             <FormLabel htmlFor="password">Password</FormLabel>
                             <div className="text-sm">
-                              <a
-                                href="/auth/reset"
+                              <Link
+                                href="/auth/forget-password"
                                 className="text-primary hover:underline"
                                 tabIndex={0}
                               >
                                 Forgot Password?
-                              </a>
+                              </Link>
                             </div>
                           </div>
                           <FormControl>

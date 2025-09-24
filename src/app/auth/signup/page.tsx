@@ -44,7 +44,7 @@ const SignupPage = () => {
         if (data?.error) {
           setMessage({ type: "error", message: data.error || "" });
         } else {
-          setMessage({ type: "success", message: data.error || "" });
+          setMessage({ type: "success", message: data.success || "" });
         }
       });
     });

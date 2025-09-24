@@ -13,8 +13,10 @@ export const publicRoute = ["/", "/auth/"];
 export const authRoute = [
   "/auth/login",
   "/auth/signup",
+  "/auth/forget-password",
   "/auth/reset",
   "/auth/error",
+  "/auth/verification",
   "/auth/new-password",
 ];
 
