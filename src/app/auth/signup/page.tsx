@@ -1,6 +1,5 @@
 "use client";
 import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState, useTransition } from "react";
@@ -19,7 +18,7 @@ import { signupSchema } from "@/schema/indexSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CircleCheckBig, CircleX, LoaderCircle } from "lucide-react";
-import { loginAction, signupAction } from "@/action";
+import { signupAction } from "@/action";
 import Link from "next/link";
 
 const SignupPage = () => {
