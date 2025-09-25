@@ -5,6 +5,17 @@ import { db } from "@/lib/db";
 import { getUserById } from "@/helper";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  events: {
+    async linkAccount({ user }) {
+      await db.user.update({
+        where: { id: user.id },
+        data: {
+          verificationStatus: "VERIFIED",
+          emailVerified: new Date(),
+        },
+      });
+    },
+  },
   adapter: PrismaAdapter(db),
   session: {
     strategy: "jwt",
@@ -15,18 +26,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     error: "/auth/error",
   },
   ...authConfig,
-  debug: false, // turn off verbose NextAuth logs in dev
-  logger: {
-    error() {
-      /* no-op to suppress stack traces */
-    },
-    warn() {
-      /* no-op */
-    },
-    debug() {
-      /* no-op */
-    },
-  },
+  debug: true, // turn off verbose NextAuth logs in dev
+  // logger: {
+  //   error() {
+  //     /* no-op to suppress stack traces */
+  //   },
+  //   warn() {
+  //     /* no-op */
+  //   },
+  //   debug() {
+  //     /* no-op */
+  //   },
+  // },
   callbacks: {
     async jwt({ token, user }) {
       if (!token.sub) return token;

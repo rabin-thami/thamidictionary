@@ -22,6 +22,7 @@
         <option value=".vue" />
         <option value=".prisma" />
         <option value=".ts" />
+        <option value=".env" />
       </list>
     </option>
   </component>
