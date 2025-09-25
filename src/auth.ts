@@ -27,19 +27,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   ...authConfig,
   debug: true, // turn off verbose NextAuth logs in dev
-  // logger: {
-  //   error() {
-  //     /* no-op to suppress stack traces */
-  //   },
-  //   warn() {
-  //     /* no-op */
-  //   },
-  //   debug() {
-  //     /* no-op */
-  //   },
-  // },
+  logger: {
+    error() {
+      /* no-op to suppress stack traces */
+    },
+    warn() {
+      /* no-op */
+    },
+    debug() {
+      /* no-op */
+    },
+  },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token }) {
       if (!token.sub) return token;
 
       const existingUser = await getUserById(token.sub);

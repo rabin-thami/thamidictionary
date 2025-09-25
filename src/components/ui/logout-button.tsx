@@ -3,9 +3,6 @@
 import { signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 
-interface LogoutButtonProps {
-  children?: React.ReactNode;
-}
 export const LogoutButton = () => {
   const onClick = () => {
     signOut();

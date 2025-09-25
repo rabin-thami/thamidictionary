@@ -34,7 +34,7 @@ export default function AuthErrorPage() {
         <CardContent>
           <p className="mb-4 text-gray-700">{message}</p>
           <Button asChild className="w-full">
-            <Link href="/login">Back to Login</Link>
+            <Link href="/auth/login">Back to Login</Link>
           </Button>
         </CardContent>
       </Card>

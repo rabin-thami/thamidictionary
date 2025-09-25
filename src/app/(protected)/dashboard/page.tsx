@@ -1,6 +1,5 @@
 "use client";
 import { useSession } from "next-auth/react";
-import { Button } from "@/components/ui/button";
 import { LogoutButton } from "@/components/ui/logout-button";
 const Dashboard = () => {
   const { data: session } = useSession();
