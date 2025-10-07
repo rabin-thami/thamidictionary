@@ -25,7 +25,6 @@ const WordCard = ({
           </CardTitle>
 
           {pronunciation && <p className="text-sm italic">/{pronunciation}/</p>}
-          
         </div>
         <Button variant="ghost" size="icon" className="self-end sm:self-center">
           <Volume2 className="h-5 w-5" />
@@ -45,7 +44,7 @@ const WordCard = ({
             <span className="font-medium text-sm sm:text-base">Examples: </span>
             <ul className="list-disc list-inside text-sm mt-1 space-y-1">
               {examples.map((example, index) => (
-                <li key={index} className="italic break-words">
+                <li key={index.toFixed()} className="italic break-words">
                   {example}
                 </li>
               ))}

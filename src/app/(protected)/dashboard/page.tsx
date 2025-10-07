@@ -4,7 +4,7 @@ import { LogoutButton } from "@/components/ui/logout-button";
 const Dashboard = () => {
   const { data: session } = useSession();
   return (
-    <div>
+    <div className="">
       <p>Hello From {session?.user?.name}</p>
       <LogoutButton />
     </div>

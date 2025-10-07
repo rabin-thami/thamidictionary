@@ -4,7 +4,7 @@ import "./globals.css";
 import type React from "react";
 import { auth } from "@/auth";
 import SessionWrapper from "@/components/session-provider/page";
-import Navbar from "@/components/ui/navbar/navbar";
+import { ThemeProvider } from "@/components/session-provider/theme-provider";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -12,8 +12,8 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Template",
-  description: "Template or boilerplate for Next.js",
+  title: "AI Planner",
+  description: "AI planner for your daily tasks and goals.",
 };
 
 export default async function RootLayout({
@@ -22,12 +22,13 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await auth();
+
   return (
-    <html lang="en">
-      <body className={`${spaceGrotesk.variable} antialiased min-h-screen bg-background text-foreground`}>
-        <SessionWrapper session={session}>
-          {children}
-        </SessionWrapper>
+    <html lang="en" suppressHydrationWarning>
+      <body className={` ${spaceGrotesk.variable} antialiased`}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <SessionWrapper session={session}>{children}</SessionWrapper>
+        </ThemeProvider>
       </body>
     </html>
   );
