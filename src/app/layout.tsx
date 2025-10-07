@@ -4,6 +4,7 @@ import "./globals.css";
 import type React from "react";
 import { auth } from "@/auth";
 import SessionWrapper from "@/components/session-provider/page";
+import Navbar from "@/components/ui/navbar/navbar";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
@@ -23,8 +24,10 @@ export default async function RootLayout({
   const session = await auth();
   return (
     <html lang="en">
-      <body className={` ${spaceGrotesk.variable} antialiased`}>
-        <SessionWrapper session={session}>{children}</SessionWrapper>
+      <body className={`${spaceGrotesk.variable} antialiased min-h-screen bg-background text-foreground`}>
+        <SessionWrapper session={session}>
+          {children}
+        </SessionWrapper>
       </body>
     </html>
   );
