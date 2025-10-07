@@ -1,15 +1,9 @@
 import type { ReactNode } from "react";
 import {
   Sidebar,
-  SidebarContent,
   SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
   SidebarHeader,
   SidebarInset,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
@@ -19,11 +13,9 @@ import {
   LayoutDashboard,
   Lightbulb,
   Settings,
-  SquarePen,
   User,
 } from "lucide-react";
 import { auth } from "@/auth";
-import Link from "next/link";
 import NavUser from "@/components/ui/user-nav";
 import DashboardNav from "@/app/(protected)/_compoents/dashboard-nav";
 import PageHeader from "@/app/(protected)/_compoents/page-header";

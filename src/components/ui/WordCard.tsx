@@ -10,8 +10,6 @@ const WordCard = ({
   examples,
   pronunciation,
   synonyms,
-  category,
-  frequency_rank,
 }: WordCardProps) => {
   return (
     <Card className="w-full">
