@@ -62,7 +62,7 @@ export default async function Layout({
 
       <SidebarInset>
         <div className="flex flex-1 flex-col">
-          <header className="flex h-16 shrink-0 items-center px-4 border-b">
+          <header className="flex h-16 shrink-0 items-center px-4 border-b gap-2">
             <SidebarTrigger className="-ml-1" />
             <PageHeader />
           </header>
