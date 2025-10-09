@@ -30,13 +30,22 @@ const Navbar = () => {
             key={item.name}
             className="hover:text-primary transition-all duration-150 text-sm lg:text-base"
           >
-            {item.name === "Login" ? <Button size="sm">{item.name}</Button> : item.name}
+            {item.name === "Login" ? (
+              <Button size="default" className="rounded-sm">
+                {item.name}
+              </Button>
+            ) : (
+              item.name
+            )}
           </Link>
         ))}
       </div>
 
       {/* ==== Mobile Nav ====*/}
-      <Menu onClick={handleToggle} className="hover:cursor-pointer md:hidden h-6 w-6" />
+      <Menu
+        onClick={handleToggle}
+        className="hover:cursor-pointer md:hidden h-6 w-6"
+      />
 
       {/* Backdrop overlay with blur */}
       {isToggle && (

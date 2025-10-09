@@ -16,12 +16,14 @@ const WordOfTheDay: React.FC<WordOfTheDayProps> = ({
   pronunciation,
 }) => {
   return (
-    <div className="word-of-the-day-card p-4 border rounded-md shadow-sm h-full">
-      <h2 className="text-lg sm:text-xl font-bold mb-1 text-muted-foreground">
+    <div className="word-of-the-day-card p-4 border rounded-md shadow-sm h-full font-eczar">
+      <h2 className="text-lg sm:text-xl font-bold mb-1 text-muted-foreground font-space-grotesk">
         Word of the Day
       </h2>
       <h3 className="text-xl sm:text-2xl font-semibold">{word}</h3>
-      {pronunciation && <p className="italic text-gray-600 text-sm">{pronunciation}</p>}
+      {pronunciation && (
+        <p className="italic text-gray-600 text-sm">{pronunciation}</p>
+      )}
       {partOfSpeech && <p className="text-sm text-gray-500">{partOfSpeech}</p>}
       <p className="mt-2 text-sm sm:text-base">{meaning}</p>
       {example && (

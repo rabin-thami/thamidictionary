@@ -24,8 +24,8 @@ const SuggestionBox: React.FC<SuggestionBoxProps> = ({
   };
 
   return (
-    <div className="p-4 border rounded-md shadow-sm max-w-md mx-auto h-full w-full">
-      <h2 className="text-lg sm:text-xl font-bold mb-3 text-muted-foreground">
+    <div className="p-4 border rounded-md shadow-sm max-w-md mx-auto h-full w-full font-eczar">
+      <h2 className="text-lg sm:text-xl font-bold mb-3 text-muted-foreground font-space-grotesk">
         Suggest Part of Speech
       </h2>
       <p className="text-base sm:text-lg mb-4">
@@ -42,7 +42,7 @@ const SuggestionBox: React.FC<SuggestionBoxProps> = ({
             className={`px-3 sm:px-4 py-2 rounded border transition-colors text-sm ${
               selectedPOS === pos
                 ? "bg-blue-500 text-white border-blue-500"
-                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100 font-space-grotesk"
             }`}
           >
             {pos}

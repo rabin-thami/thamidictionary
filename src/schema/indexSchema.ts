@@ -75,3 +75,35 @@ export const resetPasswordSchema = z.object({
     ),
   token: z.string().min(1, { message: "Invalid token" }),
 });
+
+//Word Schema Start from here
+
+enum partOfSpeechEnum {
+  noun = "noun",
+  verb = "verb",
+  adjective = "adjective",
+  adverb = "adverb",
+  pronoun = "pronoun",
+  conjunction = "conjunction",
+  preposition = "preposition",
+  interjection = "interjection",
+  article = "article",
+}
+
+enum wordCategoryEum {
+  noun = "noun",
+  verb = "verb",
+  adjective = "adjective",
+  adverb = "adverb",
+  pronoun = "pronoun",
+  conjunction = "conjunction",
+}
+
+export const WordFormSchema = z.object({
+  word: z.string().min(1, { message: "Please enter a valid word" }),
+  partOfSpeech: partOfSpeechEnum,
+  category: wordCategoryEum,
+  exmaples: z.array(z.string()),
+  definition: z.string().min(1, { message: "Please enter a valid definition" }),
+  synonyms: z.array(z.string()),
+});

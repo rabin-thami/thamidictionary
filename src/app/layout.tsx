@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Grotesk } from "next/font/google";
+import { Space_Grotesk, Eczar } from "next/font/google";
 import "./globals.css";
 import type React from "react";
 import { auth } from "@/auth";
@@ -11,9 +11,14 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
 });
 
+const eczar = Eczar({
+  variable: "--font-eczar",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
-  title: "AI Planner",
-  description: "AI planner for your daily tasks and goals.",
+  title: "Thami Dictionary",
+  description: "Your own Language Dictionary.",
 };
 
 export default async function RootLayout({
@@ -25,7 +30,9 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={` ${spaceGrotesk.variable} antialiased`}>
+      <body
+        className={` ${spaceGrotesk.variable} ${eczar.variable} antialiased`}
+      >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <SessionWrapper session={session}>{children}</SessionWrapper>
         </ThemeProvider>

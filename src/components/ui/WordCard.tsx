@@ -13,7 +13,7 @@ const WordCard = ({
 }: WordCardProps) => {
   return (
     <Card className="w-full">
-      <CardHeader className="flex flex-col sm:flex-row justify-between items-start gap-2">
+      <CardHeader className="flex flex-col sm:flex-row justify-between items-start gap-2 font-eczar">
         <div className="w-full">
           <CardTitle className="text-xl sm:text-2xl font-semibold capitalize">
             {word}{" "}

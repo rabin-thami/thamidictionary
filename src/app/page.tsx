@@ -3,9 +3,9 @@ import { useState } from "react";
 import Navbar from "@/components/ui/navbar/navbar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+
 import WordCard from "@/components/ui/WordCard";
-import WordOfTheDay from "@/app/wordOfTheDay";
+import WordOfTheDay from "@/components/ui/wordOfTheDay";
 import SuggestionBox from "@/components/ui/suggestionbox";
 import {
   Select,

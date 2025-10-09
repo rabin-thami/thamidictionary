@@ -17,8 +17,8 @@ import {
 } from "lucide-react";
 import { auth } from "@/auth";
 import NavUser from "@/components/ui/user-nav";
-import DashboardNav from "@/app/(protected)/_compoents/dashboard-nav";
-import PageHeader from "@/app/(protected)/_compoents/page-header";
+import DashboardNav from "@/protected-components/dashboard-nav";
+import PageHeader from "@/protected-components/page-header";
 
 export default async function Layout({
   children,
@@ -31,7 +31,7 @@ export default async function Layout({
   const navItem = [
     { name: "Dashboard", href: "/dashboard", icons: <LayoutDashboard /> },
     { name: "Words", href: "/words", icons: <FileType /> },
-    { name: "user", href: "/user", icons: <User /> },
+    { name: "User", href: "/user", icons: <User /> },
     { name: "Suggestions", href: "/suggestions", icons: <Lightbulb /> },
     { name: "Settings", href: "/settings", icons: <Settings /> },
   ];
