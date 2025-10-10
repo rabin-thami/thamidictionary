@@ -76,8 +76,6 @@ export const resetPasswordSchema = z.object({
   token: z.string().min(1, { message: "Invalid token" }),
 });
 
-//Word Schema Start from here
-
 enum partOfSpeechEnum {
   noun = "noun",
   verb = "verb",
@@ -90,7 +88,7 @@ enum partOfSpeechEnum {
   article = "article",
 }
 
-enum wordCategoryEum {
+enum wordCategoryEnum {
   noun = "noun",
   verb = "verb",
   adjective = "adjective",
@@ -100,10 +98,49 @@ enum wordCategoryEum {
 }
 
 export const WordFormSchema = z.object({
-  word: z.string().min(1, { message: "Please enter a valid word" }),
-  partOfSpeech: partOfSpeechEnum,
-  category: wordCategoryEum,
-  exmaples: z.array(z.string()),
-  definition: z.string().min(1, { message: "Please enter a valid definition" }),
-  synonyms: z.array(z.string()),
+  // Words in three languages
+  wordEnglish: z.string().min(1, { message: "Please enter the English word" }),
+  wordNepali: z.string().min(1, { message: "Please enter the Nepali word" }),
+  wordThami: z.string().min(1, { message: "Please enter the Thami word" }),
+
+  // Part of speech and category
+  partOfSpeech: z.nativeEnum(partOfSpeechEnum, {
+    // @ts-ignore
+    required_error: "Please select a part of speech",
+  }),
+  category: z.nativeEnum(wordCategoryEnum, {
+    // @ts-ignore
+    required_error: "Please select a category",
+  }),
+
+  // Definitions in three languages
+  definitionEnglish: z
+    .string()
+    .min(1, { message: "Please enter the English definition" }),
+  definitionNepali: z
+    .string()
+    .min(1, { message: "Please enter the Nepali definition" }),
+  definitionThami: z
+    .string()
+    .min(1, { message: "Please enter the Thami definition" }),
+
+  // Examples in three languages
+  examplesEnglish: z
+    .array(z.string().min(1))
+    .min(1, { message: "Please add at least one English example" }),
+  examplesNepali: z
+    .array(z.string().min(1))
+    .min(1, { message: "Please add at least one Nepali example" }),
+  examplesThami: z
+    .array(z.string().min(1))
+    .min(1, { message: "Please add at least one Thami example" }),
+
+  // Synonyms in three languages
+  synonymsEnglish: z.array(z.string().min(1)),
+  synonymsNepali: z.array(z.string().min(1)),
+  synonymsThami: z.array(z.string().min(1)),
 });
+
+export type WordFormData = z.infer<typeof WordFormSchema>;
+
+export { partOfSpeechEnum, wordCategoryEnum };
