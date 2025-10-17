@@ -1,36 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useTransition, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { WordFormSchema, type WordFormData } from "@/schema/indexSchema";
-
-import { StepOne } from "@/protected-components/word-form/step-one";
-
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+import { StepOne } from "@/protected-components/word-form/step-one";
+import { StepTwo } from "@/protected-components/word-form/step-two";
+import { StepThree } from "@/protected-components/word-form/step-three";
+import { StepFour } from "@/protected-components/word-form/step-four";
+import { StepFive } from "@/protected-components/word-form/step-five";
+import { StepSix } from "@/protected-components/word-form/step-six";
+import { addWordAction } from "@/action";
+
+import { toast } from "sonner";
+
 const steps = [
-  { id: 1, name: "Words", description: "Enter words in all languages" },
-  { id: 2, name: "Classification", description: "Part of speech & category" },
-  { id: 3, name: "Definitions", description: "Define in all languages" },
-  { id: 4, name: "Examples", description: "Add usage examples" },
-  { id: 5, name: "Synonyms", description: "Add synonyms (optional)" },
-  { id: 6, name: "Review", description: "Review and submit" },
+  { id: 1, name: "Words" }, //description: "Enter words in all languages"
+  { id: 2, name: "Classification" }, //description: "Part of speech & category"
+  { id: 3, name: "Definitions" }, //description: "Define in all languages"
+  { id: 4, name: "Examples" }, // description: "Add usage examples"
+  { id: 5, name: "Synonyms" }, // description: "Add synonyms (optional)"
+  { id: 6, name: "Review" }, //description: "Review and submit"
 ];
 
 const WordStepperForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<WordFormData>({
     resolver: zodResolver(WordFormSchema),
@@ -51,13 +52,18 @@ const WordStepperForm = () => {
     mode: "onChange",
   });
 
-  const onSubmit = async (data: WordFormData) => {
-    setIsSubmitting(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    console.log("Form submitted:", data);
-    setIsSubmitting(false);
-    alert("Word data submitted successfully!");
+  const onSubmit = async (values: WordFormData) => {
+    startTransition(() => {
+      addWordAction(values).then((data) => {
+        if (data?.error) {
+          // setMessage({ type: "error", message: data.error || "" });
+          toast.error(data.error);
+        } else if (data?.success && data?.redirect) {
+          // Redirect after successful login
+          window.location.href = data.redirect;
+        }
+      });
+    });
   };
 
   const nextStep = async () => {
@@ -104,16 +110,8 @@ const WordStepperForm = () => {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto p-4 sm:p-6">
+    <div className="w-full mx-auto p-4 sm:p-6">
       <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl sm:text-3xl font-bold">
-            Multilingual Word Entry
-          </CardTitle>
-          <CardDescription>
-            Add word data in English, Nepali, and Thami languages
-          </CardDescription>
-        </CardHeader>
         <CardContent>
           {/* Stepper Navigation */}
           <nav aria-label="Progress" className="mb-8 overflow-x-auto">
@@ -154,9 +152,6 @@ const WordStepperForm = () => {
                         >
                           {step.name}
                         </p>
-                        <p className="text-xs text-muted-foreground hidden md:block">
-                          {step.description}
-                        </p>
                       </div>
                     </div>
                     {index < steps.length - 1 && (
@@ -177,18 +172,18 @@ const WordStepperForm = () => {
 
           {/* Form Steps */}
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="space-y-6">
               <div className="max-h-[60vh] overflow-y-auto pr-2">
                 {currentStep === 1 && <StepOne form={form} />}
-                {/*{currentStep === 2 && <StepTwo form={form} />}*/}
-                {/*{currentStep === 3 && <StepThree form={form} />}*/}
-                {/*{currentStep === 4 && <StepFour form={form} />}*/}
-                {/*{currentStep === 5 && <StepFive form={form} />}*/}
-                {/*{currentStep === 6 && <StepSix form={form} />}*/}
+                {currentStep === 2 && <StepTwo form={form} />}
+                {currentStep === 3 && <StepThree form={form} />}
+                {currentStep === 4 && <StepFour form={form} />}
+                {currentStep === 5 && <StepFive form={form} />}
+                {currentStep === 6 && <StepSix form={form} />}
               </div>
 
               {/* Navigation Buttons */}
-              <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0 pt-6 border-t">
+              <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0 pt-10 border-t">
                 <Button
                   type="button"
                   variant="outline"
@@ -208,15 +203,16 @@ const WordStepperForm = () => {
                   </Button>
                 ) : (
                   <Button
-                    type="submit"
-                    disabled={isSubmitting}
+                    type="button"
+                    disabled={isPending}
+                    onClick={form.handleSubmit(onSubmit)}
                     className="w-full sm:w-auto"
                   >
-                    {isSubmitting ? "Submitting..." : "Submit"}
+                    {isPending ? "Submitting..." : "Submit"}
                   </Button>
                 )}
               </div>
-            </form>
+            </div>
           </Form>
         </CardContent>
       </Card>

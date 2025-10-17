@@ -3,18 +3,17 @@
 import type { UseFormReturn } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import type { WordFormSchema } from "@/schema/indexSchema";
-import type z from "zod";
+import type { WordFormData } from "@/schema/indexSchema";
 
 interface StepSixProps {
-  form: UseFormReturn<z.infer<typeof WordFormSchema>>;
+  form: UseFormReturn<WordFormData>;
 }
 
-export function StepSix({ form }: StepSixProps) {
+export const StepSix = ({ form }: StepSixProps) => {
   const data = form.watch();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-4 py-0">
       <div>
         <h3 className="text-lg font-semibold mb-4">Review Your Entry</h3>
         <p className="text-sm text-muted-foreground mb-6">
@@ -98,7 +97,7 @@ export function StepSix({ form }: StepSixProps) {
                 <ul className="list-disc list-inside space-y-1">
                   {data.examplesEnglish?.filter(Boolean).map((example, i) => (
                     <li
-                      key={i}
+                      key={i.toFixed()}
                       className="text-sm text-muted-foreground break-words"
                     >
                       {example}
@@ -111,7 +110,7 @@ export function StepSix({ form }: StepSixProps) {
                 <ul className="list-disc list-inside space-y-1">
                   {data.examplesNepali?.filter(Boolean).map((example, i) => (
                     <li
-                      key={i}
+                      key={i.toFixed()}
                       className="text-sm text-muted-foreground break-words"
                     >
                       {example}
@@ -124,7 +123,7 @@ export function StepSix({ form }: StepSixProps) {
                 <ul className="list-disc list-inside space-y-1">
                   {data.examplesThami?.filter(Boolean).map((example, i) => (
                     <li
-                      key={i}
+                      key={i.toFixed()}
                       className="text-sm text-muted-foreground break-words"
                     >
                       {example}
@@ -151,7 +150,7 @@ export function StepSix({ form }: StepSixProps) {
                       {data.synonymsEnglish
                         .filter(Boolean)
                         .map((synonym, i) => (
-                          <Badge key={i} variant="outline">
+                          <Badge key={i.toFixed()} variant="outline">
                             {synonym}
                           </Badge>
                         ))}
@@ -163,7 +162,7 @@ export function StepSix({ form }: StepSixProps) {
                     <p className="text-sm font-medium mb-2">Nepali:</p>
                     <div className="flex flex-wrap gap-2">
                       {data.synonymsNepali.filter(Boolean).map((synonym, i) => (
-                        <Badge key={i} variant="outline">
+                        <Badge key={i.toFixed()} variant="outline">
                           {synonym}
                         </Badge>
                       ))}
@@ -175,7 +174,7 @@ export function StepSix({ form }: StepSixProps) {
                     <p className="text-sm font-medium mb-2">Thami:</p>
                     <div className="flex flex-wrap gap-2">
                       {data.synonymsThami.filter(Boolean).map((synonym, i) => (
-                        <Badge key={i} variant="outline">
+                        <Badge key={i.toFixed()} variant="outline">
                           {synonym}
                         </Badge>
                       ))}
@@ -189,4 +188,4 @@ export function StepSix({ form }: StepSixProps) {
       </div>
     </div>
   );
-}
+};

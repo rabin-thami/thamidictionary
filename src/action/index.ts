@@ -1,7 +1,6 @@
-import { forgetPasswordAction } from "@/action/forget-password";
-
-export { loginAction } from "./login";
-export { signupAction } from "./signup";
-export { signupVerificationAction } from "./signup-verification";
-export { forgetPasswordAction } from "./forget-password";
-export { resetPasswordAction } from "./reset-password";
+export { loginAction } from "./login/login";
+export { signupAction } from "./signup/signup";
+export { signupVerificationAction } from "./signup-verification/signup-verification";
+export { forgetPasswordAction } from "./forget-password/forget-password";
+export { resetPasswordAction } from "./reset-password/reset-password";
+export { addWordAction } from "./add-words/addword";

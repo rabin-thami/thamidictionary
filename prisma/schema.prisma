@@ -22,6 +22,7 @@ model User {
   image              String?
   accounts           Account[]
   VerificationToken  VerificationToken[]
+  Word               Word[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -62,4 +63,62 @@ model VerificationToken {
   user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
+}
+
+enum PartOfSpeechEnum {
+  noun
+  verb
+  adjective
+  adverb
+  pronoun
+  conjunction
+  preposition
+  interjection
+  article
+}
+
+enum WordCategoryEnum {
+  noun
+  verb
+  adjective
+  adverb
+  pronoun
+  conjunction
+}
+
+model Word {
+  id               String   @id @default(cuid())
+
+  // Words in three languages
+  wordEnglish      String
+  wordNepali       String
+  wordThami        String
+
+  // Part of speech and category
+  partOfSpeech     PartOfSpeechEnum
+  category         WordCategoryEnum
+
+  // Definitions in three languages
+  definitionEnglish String
+  definitionNepali  String
+  definitionThami   String
+
+  // Examples in three languages
+  examplesEnglish   String[] @default([])
+  examplesNepali    String[] @default([])
+  examplesThami     String[] @default([])
+
+  // Synonyms in three languages
+  synonymsEnglish   String[] @default([])
+  synonymsNepali    String[] @default([])
+  synonymsThami     String[] @default([])
+
+  // Ownership / tracking
+  userId           String
+  user             User      @relation(fields: [userId], references: [id])
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  // Optional: prevent same user adding duplicate Thami word
+  @@unique([userId, wordThami])
 }

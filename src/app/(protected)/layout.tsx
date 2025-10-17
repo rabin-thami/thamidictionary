@@ -19,6 +19,7 @@ import { auth } from "@/auth";
 import NavUser from "@/components/ui/user-nav";
 import DashboardNav from "@/protected-components/dashboard-nav";
 import PageHeader from "@/protected-components/page-header";
+import { Toaster } from "@/ui/sonner";
 
 export default async function Layout({
   children,
@@ -38,6 +39,7 @@ export default async function Layout({
 
   return (
     <SidebarProvider>
+      <Toaster richColors position="top-center" closeButton />
       <Sidebar variant="inset" collapsible="icon">
         <SidebarHeader>
           <div className="flex items-center gap-2 py-2">

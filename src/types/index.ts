@@ -6,6 +6,7 @@ export interface StatusMessage {
 
 export interface WordCardProps {
   word: string; // The word itself
+  definition: string; // The definition of the word
   part_of_speech: string; // e.g., noun, verb, interjection
   examples: string[]; // Array of example sentences
   pronunciation?: string; // Optional

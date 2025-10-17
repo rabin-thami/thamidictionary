@@ -2,22 +2,23 @@
 
 import { type UseFormReturn, useFieldArray } from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import type { WordFormSchema } from "@/schema/indexSchema";
+import type { WordFormData } from "@/schema/indexSchema";
 import { Plus, X } from "lucide-react";
-import type z from "zod";
 
 interface StepFourProps {
-  form: UseFormReturn<z.infer<typeof WordFormSchema>>;
+  form: UseFormReturn<WordFormData>;
 }
 
 export function StepFour({ form }: StepFourProps) {
-  const {
-    register,
-    control,
-    formState: { errors },
-  } = form;
+  const { control } = form;
 
   const {
     fields: examplesEnglishFields,
@@ -25,6 +26,7 @@ export function StepFour({ form }: StepFourProps) {
     remove: removeEnglish,
   } = useFieldArray({
     control,
+    // @ts-ignore
     name: "examplesEnglish",
   });
 
@@ -34,6 +36,7 @@ export function StepFour({ form }: StepFourProps) {
     remove: removeNepali,
   } = useFieldArray({
     control,
+    // @ts-ignore
     name: "examplesNepali",
   });
 
@@ -43,116 +46,98 @@ export function StepFour({ form }: StepFourProps) {
     remove: removeThami,
   } = useFieldArray({
     control,
+    // @ts-ignore
     name: "examplesThami",
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-4 py-0">
       <div>
         <h3 className="text-lg font-semibold mb-4">Usage Examples</h3>
 
-        {/* English Examples */}
         <div className="space-y-3 mb-6">
-          <Label>English Examples *</Label>
-          {examplesEnglishFields.map((field, index) => (
-            <div key={field.id} className="flex flex-col sm:flex-row gap-2">
-              <Input
-                placeholder={`Example ${index + 1} in English`}
-                {...register(`examplesEnglish.${index}`)}
-                className="flex-1"
-              />
-              {examplesEnglishFields.length > 1 && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => removeEnglish(index)}
-                  className="shrink-0"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              )}
-            </div>
-          ))}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => appendEnglish("")}
-            className="w-full"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add English Example
-          </Button>
-          {errors.examplesEnglish && (
-            <p className="text-sm text-destructive">
-              {errors.examplesEnglish.message}
-            </p>
-          )}
-        </div>
-
-        {/* Nepali Examples */}
-        <div className="space-y-3 mb-6">
-          <Label>Nepali Examples (नेपाली उदाहरण) *</Label>
+          <FormLabel>
+            Nepali Examples <span className="font-eczar">(नेपाली उदाहरण)</span> *
+          </FormLabel>
           {examplesNepaliFields.map((field, index) => (
-            <div key={field.id} className="flex flex-col sm:flex-row gap-2">
-              <Input
-                placeholder={`उदाहरण ${index + 1} नेपालीमा`}
-                {...register(`examplesNepali.${index}`)}
-                className="flex-1"
-              />
-              {examplesNepaliFields.length > 1 && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => removeNepali(index)}
-                  className="shrink-0"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
+            <FormField
+              key={field.id}
+              control={control}
+              name={`examplesNepali.${index}`}
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <FormControl>
+                      <Input
+                        placeholder={`उदाहरण ${index + 1} नेपालीमा`}
+                        {...field}
+                        className="flex-1 font-eczar"
+                      />
+                    </FormControl>
+                    {examplesNepaliFields.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => removeNepali(index)}
+                        className="shrink-0"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
+                  <FormMessage />
+                </FormItem>
               )}
-            </div>
+            />
           ))}
           <Button
             type="button"
             variant="outline"
             size="sm"
             onClick={() => appendNepali("")}
-            className="w-full"
+            className="w-full font-eczar"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Nepali Example
           </Button>
-          {errors.examplesNepali && (
-            <p className="text-sm text-destructive">
-              {errors.examplesNepali.message}
-            </p>
-          )}
         </div>
 
-        {/* Thami Examples */}
-        <div className="space-y-3">
-          <Label>Thami Examples *</Label>
+        <div className="space-y-3 mb-6">
+          <FormLabel>
+            Thami Examples <span className="font-eczar">(थामी उदाहरण)</span>*
+          </FormLabel>
           {examplesThamiFields.map((field, index) => (
-            <div key={field.id} className="flex flex-col sm:flex-row gap-2">
-              <Input
-                placeholder={`Example ${index + 1} in Thami`}
-                {...register(`examplesThami.${index}`)}
-                className="flex-1"
-              />
-              {examplesThamiFields.length > 1 && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => removeThami(index)}
-                  className="shrink-0"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
+            <FormField
+              key={field.id}
+              control={control}
+              name={`examplesThami.${index}`}
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <FormControl>
+                      <Input
+                        placeholder={`उदाहरण ${index + 1} थामी`}
+                        {...field}
+                        className="flex-1 font-eczar"
+                      />
+                    </FormControl>
+                    {examplesThamiFields.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => removeThami(index)}
+                        className="shrink-0"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
+                  <FormMessage />
+                </FormItem>
               )}
-            </div>
+            />
           ))}
           <Button
             type="button"
@@ -164,11 +149,52 @@ export function StepFour({ form }: StepFourProps) {
             <Plus className="w-4 h-4 mr-2" />
             Add Thami Example
           </Button>
-          {errors.examplesThami && (
-            <p className="text-sm text-destructive">
-              {errors.examplesThami.message}
-            </p>
-          )}
+        </div>
+
+        <div className="space-y-3 mb-6">
+          <FormLabel>English Examples *</FormLabel>
+          {examplesEnglishFields.map((field, index) => (
+            <FormField
+              key={field.id}
+              control={control}
+              name={`examplesEnglish.${index}`}
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <FormControl>
+                      <Input
+                        placeholder={`Example ${index + 1} in English`}
+                        {...field}
+                        className="flex-1"
+                      />
+                    </FormControl>
+                    {examplesEnglishFields.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => removeEnglish(index)}
+                        className="shrink-0"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          ))}
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => appendEnglish("")}
+            className="w-full"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add English Example
+          </Button>
         </div>
       </div>
     </div>

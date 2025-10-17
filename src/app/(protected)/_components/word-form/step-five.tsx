@@ -2,25 +2,30 @@
 
 import { type UseFormReturn, useFieldArray } from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import type { WordFormSchema } from "@/schema/indexSchema";
+import type { WordFormData } from "@/schema/indexSchema";
 import { Plus, X } from "lucide-react";
-import type z from "zod";
 
 interface StepFiveProps {
-  form: UseFormReturn<z.infer<typeof WordFormSchema>>;
+  form: UseFormReturn<WordFormData>;
 }
 
-export function StepFive({ form }: StepFiveProps) {
-  const { register, control } = form;
-
+export const StepFive = ({ form }: StepFiveProps) => {
+  const { control } = form;
   const {
     fields: synonymsEnglishFields,
     append: appendEnglish,
     remove: removeEnglish,
   } = useFieldArray({
     control,
+    // @ts-ignore
     name: "synonymsEnglish",
   });
 
@@ -30,6 +35,7 @@ export function StepFive({ form }: StepFiveProps) {
     remove: removeNepali,
   } = useFieldArray({
     control,
+    // @ts-ignore
     name: "synonymsNepali",
   });
 
@@ -39,6 +45,7 @@ export function StepFive({ form }: StepFiveProps) {
     remove: removeThami,
   } = useFieldArray({
     control,
+    // @ts-ignore
     name: "synonymsThami",
   });
 
@@ -50,64 +57,17 @@ export function StepFive({ form }: StepFiveProps) {
           Add synonyms for the word in each language. This step is optional.
         </p>
 
-        {/* English Synonyms */}
         <div className="space-y-3 mb-6">
-          <Label>English Synonyms</Label>
-          {synonymsEnglishFields.length === 0 ? (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => appendEnglish("")}
-              className="w-full"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add English Synonym
-            </Button>
-          ) : (
-            <>
-              {synonymsEnglishFields.map((field, index) => (
-                <div key={field.id} className="flex flex-col sm:flex-row gap-2">
-                  <Input
-                    placeholder={`Synonym ${index + 1} in English`}
-                    {...register(`synonymsEnglish.${index}`)}
-                    className="flex-1"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => removeEnglish(index)}
-                    className="shrink-0"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              ))}
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => appendEnglish("")}
-                className="w-full"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Another English Synonym
-              </Button>
-            </>
-          )}
-        </div>
-
-        {/* Nepali Synonyms */}
-        <div className="space-y-3 mb-6">
-          <Label>Nepali Synonyms (नेपाली समानार्थी)</Label>
+          <FormLabel>
+            Nepali Synonyms <span className="font-eczar">(नेपाली समानार्थी)</span>
+          </FormLabel>
           {synonymsNepaliFields.length === 0 ? (
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={() => appendNepali("")}
-              className="w-full"
+              className="w-full font-eczar"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Nepali Synonym
@@ -115,22 +75,34 @@ export function StepFive({ form }: StepFiveProps) {
           ) : (
             <>
               {synonymsNepaliFields.map((field, index) => (
-                <div key={field.id} className="flex flex-col sm:flex-row gap-2">
-                  <Input
-                    placeholder={`समानार्थी ${index + 1} नेपालीमा`}
-                    {...register(`synonymsNepali.${index}`)}
-                    className="flex-1"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => removeNepali(index)}
-                    className="shrink-0"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
+                <FormField
+                  key={field.id}
+                  control={control}
+                  name={`synonymsNepali.${index}`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <FormControl>
+                          <Input
+                            placeholder={`समानार्थी ${index + 1} नेपालीमा`}
+                            {...field}
+                            className="flex-1 font-eczar"
+                          />
+                        </FormControl>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => removeNepali(index)}
+                          className="shrink-0"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               ))}
               <Button
                 type="button"
@@ -146,16 +118,17 @@ export function StepFive({ form }: StepFiveProps) {
           )}
         </div>
 
-        {/* Thami Synonyms */}
-        <div className="space-y-3">
-          <Label>Thami Synonyms</Label>
+        <div className="space-y-3 mb-6">
+          <FormLabel>
+            Thami Synonyms <span className="font-eczar">(थामी समानार्थी)</span>
+          </FormLabel>
           {synonymsThamiFields.length === 0 ? (
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={() => appendThami("")}
-              className="w-full"
+              className="w-full font-eczar"
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Thami Synonym
@@ -163,22 +136,34 @@ export function StepFive({ form }: StepFiveProps) {
           ) : (
             <>
               {synonymsThamiFields.map((field, index) => (
-                <div key={field.id} className="flex flex-col sm:flex-row gap-2">
-                  <Input
-                    placeholder={`Synonym ${index + 1} in Thami`}
-                    {...register(`synonymsThami.${index}`)}
-                    className="flex-1"
-                  />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => removeThami(index)}
-                    className="shrink-0"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
+                <FormField
+                  key={field.id}
+                  control={control}
+                  name={`synonymsThami.${index}`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <FormControl>
+                          <Input
+                            placeholder={`समानार्थी ${index + 1} थामी`}
+                            {...field}
+                            className="flex-1 font-eczar"
+                          />
+                        </FormControl>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => removeThami(index)}
+                          className="shrink-0"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               ))}
               <Button
                 type="button"
@@ -193,7 +178,65 @@ export function StepFive({ form }: StepFiveProps) {
             </>
           )}
         </div>
+        <div className="space-y-3 mb-6">
+          <FormLabel>English Synonyms</FormLabel>
+          {synonymsEnglishFields.length === 0 ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => appendEnglish("")}
+              className="w-full"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add English Synonym
+            </Button>
+          ) : (
+            <>
+              {synonymsEnglishFields.map((field, index) => (
+                <FormField
+                  key={field.id}
+                  control={control}
+                  name={`synonymsEnglish.${index}`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <FormControl>
+                          <Input
+                            placeholder={`Synonym ${index + 1} in English`}
+                            {...field}
+                            className="flex-1"
+                          />
+                        </FormControl>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => removeEnglish(index)}
+                          className="shrink-0"
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ))}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => appendEnglish("")}
+                className="w-full"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Another English Synonym
+              </Button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
-}
+};

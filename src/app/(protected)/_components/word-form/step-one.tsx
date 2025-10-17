@@ -17,7 +17,7 @@ interface StepOneProps {
 
 export const StepOne = ({ form }: StepOneProps) => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4">
       <div>
         <h3 className="text-lg font-semibold mb-4">
           Enter the word in all three languages
@@ -25,26 +25,18 @@ export const StepOne = ({ form }: StepOneProps) => {
         <div className="space-y-4">
           <FormField
             control={form.control}
-            name="wordEnglish"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>English Word *</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter word in English" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
             name="wordNepali"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nepali Word (नेपाली शब्द) *</FormLabel>
+                <FormLabel>
+                  Nepali Word <span className="font-eczar">(नेपाली शब्द)</span> *
+                </FormLabel>
                 <FormControl>
-                  <Input placeholder="नेपालीमा शब्द प्रविष्ट गर्नुहोस्" {...field} />
+                  <Input
+                    placeholder="नेपालीमा शब्द प्रविष्ट गर्नुहोस्"
+                    {...field}
+                    className="font-eczar"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -56,9 +48,24 @@ export const StepOne = ({ form }: StepOneProps) => {
             name="wordThami"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Thami Word *</FormLabel>
+                <FormLabel>
+                  Thami Word <span className="font-eczar">(थामी शब्द)</span>*
+                </FormLabel>
                 <FormControl>
                   <Input placeholder="Enter word in Thami" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="wordEnglish"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>English Word *</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter word in English" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
