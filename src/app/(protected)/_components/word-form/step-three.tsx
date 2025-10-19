@@ -57,6 +57,7 @@ export const StepThree = ({ form }: StepThreeProps) => {
                     placeholder="Enter definition in Thami"
                     rows={3}
                     {...field}
+                    className="font-eczar"
                   />
                 </FormControl>
                 <FormMessage />

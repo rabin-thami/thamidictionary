@@ -1,12 +1,22 @@
 "use client";
-
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Card } from "@/components/ui/card";
+import { ArrowLeft, Quote, List, Tag, Pencil } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import WordCard from "@/components/ui/WordCard";
+import PageHeader from "@/protected-components/page-header";
 
-// Keep in sync with Prisma model fields used on list
+// Types matching list page
 type Word = {
   id: string;
   wordEnglish: string;
@@ -23,179 +33,178 @@ type Word = {
   synonymsEnglish: string[];
   synonymsNepali: string[];
   synonymsThami: string[];
-  createdAt?: string;
-  updatedAt?: string;
 };
 
-export default function WordDetailPage() {
-  const { id } = useParams<{ id: string }>();
+type LanguageKey = "English" | "Nepali" | "Thami";
+
+const Page = () => {
   const router = useRouter();
+  const params = useParams();
+  const id = Array.isArray(params?.id) ? params.id[0] : (params?.id as string);
 
   const [word, setWord] = useState<Word | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const handleBack = () => {
+    router.back();
+  };
+
   useEffect(() => {
-    let abort = false;
-    async function load() {
+    let ignore = false;
+    async function fetchWord() {
       try {
         setLoading(true);
         setError(null);
-        const res = await fetch(`/api/words/${id}`);
+        const res = await fetch(`/api/words?id=${encodeURIComponent(id)}`);
         if (!res.ok) {
-          const body = await res.json().catch(() => ({} as any));
-          throw new Error(body?.error || `Failed: ${res.status}`);
+          throw new Error(`Failed to load (status ${res.status})`);
         }
-        const data = await res.json();
-        if (!abort) setWord(data.data as Word);
+        const json = await res.json();
+        const data: Word | undefined = json?.data;
+        if (!ignore) setWord(data ?? null);
       } catch (e: any) {
-        if (!abort) setError(e.message || "Failed to load word");
+        if (!ignore) setError(e?.message || "Failed to load");
       } finally {
-        if (!abort) setLoading(false);
+        if (!ignore) setLoading(false);
       }
     }
-    if (id) load();
+    if (id) fetchWord();
     return () => {
-      abort = true;
+      ignore = true;
     };
   }, [id]);
 
-  const rows = useMemo(() => {
-    if (!word) return [] as { label: string; values: string[] }[];
+  const sections = useMemo(() => {
+    if (!word)
+      return [] as {
+        label: LanguageKey;
+        w: string;
+        def: string;
+        ex: string[];
+        syn: string[];
+      }[];
     return [
-      { label: "Word", values: [word.wordEnglish, word.wordNepali, word.wordThami] },
-      { label: "Definition", values: [word.definitionEnglish, word.definitionNepali, word.definitionThami] },
+      {
+        label: "Nepali" as const,
+        w: word.wordNepali,
+        def: word.definitionNepali,
+        ex: word.examplesNepali || [],
+        syn: word.synonymsNepali || [],
+      },
+      {
+        label: "Thami" as const,
+        w: word.wordThami,
+        def: word.definitionThami,
+        ex: word.examplesThami || [],
+        syn: word.synonymsThami || [],
+      },
+      {
+        label: "English" as const,
+        w: word.wordEnglish,
+        def: word.definitionEnglish,
+        ex: word.examplesEnglish || [],
+        syn: word.synonymsEnglish || [],
+      },
     ];
   }, [word]);
 
-  const examples = useMemo(() => {
-    if (!word) return [] as { en?: string; ne?: string; th?: string }[];
-    const maxLen = Math.max(
-      word.examplesEnglish?.length || 0,
-      word.examplesNepali?.length || 0,
-      word.examplesThami?.length || 0
-    );
-    return Array.from({ length: maxLen }).map((_, i) => ({
-      en: word.examplesEnglish?.[i],
-      ne: word.examplesNepali?.[i],
-      th: word.examplesThami?.[i],
-    }));
-  }, [word]);
-
-  const synonyms = useMemo(() => {
-    if (!word) return [] as { en?: string; ne?: string; th?: string }[];
-    const maxLen = Math.max(
-      word.synonymsEnglish?.length || 0,
-      word.synonymsNepali?.length || 0,
-      word.synonymsThami?.length || 0
-    );
-    return Array.from({ length: maxLen }).map((_, i) => ({
-      en: word.synonymsEnglish?.[i],
-      ne: word.synonymsNepali?.[i],
-      th: word.synonymsThami?.[i],
-    }));
-  }, [word]);
-
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <Button variant="outline" onClick={() => router.push("/words")}>Back to list</Button>
-        {word && (
-          <div className="text-sm text-muted-foreground">
-            POS: <span className="capitalize">{word.partOfSpeech}</span> • Category: <span className="capitalize">{word.category}</span>
-          </div>
-        )}
+    <div className="space-y-6">
+      <div className="flex items-center justify-between space-y-2">
+        <Button
+          onClick={handleBack}
+          variant="outline"
+          className="inline-flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to words
+        </Button>
+        <Button className="inline-flex items-center gap-2" onClick={() => router.push(`/words/${id}/edit`)}>
+          <Pencil />
+          Edit
+        </Button>
       </div>
 
-      <Card className="p-4">
-        {loading && <div className="text-sm text-muted-foreground">Loading...</div>}
-        {!loading && error && (
-          <div className="text-sm text-destructive">{error}</div>
-        )}
-        {!loading && !error && word && (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-lg font-semibold mb-2">Overview</h2>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Field</TableHead>
-                    <TableHead>English</TableHead>
-                    <TableHead>Nepali</TableHead>
-                    <TableHead>Thami</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {rows.map((r) => (
-                    <TableRow key={r.label}>
-                      <TableCell className="font-medium">{r.label}</TableCell>
-                      <TableCell className="font-eczar">{r.values[0]}</TableCell>
-                      <TableCell className="font-eczar">{r.values[1]}</TableCell>
-                      <TableCell className="font-eczar">{r.values[2]}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+      {loading && (
+        <Card className="w-full">
+          <CardHeader className="pb-4">
+            <div className="flex flex-col gap-3">
+              <Skeleton className="h-6 w-48" />
+              <div className="flex gap-2">
+                <Skeleton className="h-6 w-40" />
+                <Skeleton className="h-6 w-32" />
+              </div>
+              <Skeleton className="h-4 w-full max-w-[600px]" />
             </div>
+          </CardHeader>
+          <Separator />
+          <CardContent className="pt-6 grid sm:grid-cols-2 gap-6">
+            <Skeleton className="h-24" />
+            <Skeleton className="h-24" />
+          </CardContent>
+        </Card>
+      )}
 
-            <div>
-              <h2 className="text-lg font-semibold mb-2">Examples</h2>
-              {examples.length === 0 ? (
-                <div className="text-sm text-muted-foreground">No examples</div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>#</TableHead>
-                      <TableHead>EN</TableHead>
-                      <TableHead>NE</TableHead>
-                      <TableHead>TH</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {examples.map((ex, i) => (
-                      <TableRow key={i}>
-                        <TableCell className="w-10">{i + 1}</TableCell>
-                        <TableCell className="font-eczar">{ex.en || ""}</TableCell>
-                        <TableCell className="font-eczar">{ex.ne || ""}</TableCell>
-                        <TableCell className="font-eczar">{ex.th || ""}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
-            </div>
+      {error && (
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle className="text-destructive">Failed to load</CardTitle>
+            <CardDescription>{error}</CardDescription>
+          </CardHeader>
+        </Card>
+      )}
 
-            <div>
-              <h2 className="text-lg font-semibold mb-2">Synonyms</h2>
-              {synonyms.length === 0 ? (
-                <div className="text-sm text-muted-foreground">No synonyms</div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>#</TableHead>
-                      <TableHead>EN</TableHead>
-                      <TableHead>NE</TableHead>
-                      <TableHead>TH</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {synonyms.map((sn, i) => (
-                      <TableRow key={i}>
-                        <TableCell className="w-10">{i + 1}</TableCell>
-                        <TableCell className="font-eczar">{sn.en || ""}</TableCell>
-                        <TableCell className="font-eczar">{sn.ne || ""}</TableCell>
-                        <TableCell className="font-eczar">{sn.th || ""}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              )}
+      {!loading && !error && word && (
+        <Card className="w-full">
+          <CardHeader className="pb-0">
+            <div className="flex flex-col gap-3">
+              <CardTitle className="font-eczar text-2xl sm:text-3xl">
+                <span className="font-semibold">
+                  {word.wordEnglish || word.wordNepali || word.wordThami}
+                </span>
+                <span className="ml-2 text-base font-normal italic">
+                  ({word.partOfSpeech})
+                </span>
+              </CardTitle>
+
+              {/*<div className="flex flex-wrap items-center gap-2">*/}
+              {/*  <Badge variant="outline" className="text-xs sm:text-sm">*/}
+              {/*    <Tag className="h-3.5 w-3.5 mr-1.5 text-muted-foreground" />*/}
+              {/*    Part of Speech: {word.partOfSpeech}*/}
+              {/*  </Badge>*/}
+              {/*</div>*/}
+
+              <CardDescription className="text-sm">
+                Below are the entries in Nepali, Thami and English.
+              </CardDescription>
             </div>
-          </div>
-        )}
-      </Card>
+          </CardHeader>
+
+          <Separator />
+
+          <CardContent className="pt-0 font-eczar">
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {sections.map((sec) => (
+                <div key={sec.label} className="space-y-2">
+                  <div className="text-sm font-medium text-muted-foreground">
+                    {sec.label}
+                  </div>
+                  <WordCard
+                    word={sec.w || "—"}
+                    definition={sec.def}
+                    part_of_speech={word.partOfSpeech}
+                    examples={sec.ex}
+                    synonyms={sec.syn}
+                  />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
-}
+};
+
+export default Page;

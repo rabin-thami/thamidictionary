@@ -26,7 +26,7 @@ export const StepSix = ({ form }: StepSixProps) => {
             <CardHeader>
               <CardTitle className="text-base">Words</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="space-y-2 font-eczar">
               <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-1 sm:gap-2">
                 <span className="text-sm font-medium">English:</span>
                 <span className="text-sm">{data.wordEnglish || "—"}</span>
@@ -64,7 +64,7 @@ export const StepSix = ({ form }: StepSixProps) => {
             <CardHeader>
               <CardTitle className="text-base">Definitions</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-3 font-eczar">
               <div>
                 <p className="text-sm font-medium mb-1">English:</p>
                 <p className="text-sm text-muted-foreground break-words">
@@ -91,7 +91,7 @@ export const StepSix = ({ form }: StepSixProps) => {
             <CardHeader>
               <CardTitle className="text-base">Examples</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-3 font-eczar">
               <div>
                 <p className="text-sm font-medium mb-1">English:</p>
                 <ul className="list-disc list-inside space-y-1">
@@ -142,7 +142,7 @@ export const StepSix = ({ form }: StepSixProps) => {
               <CardHeader>
                 <CardTitle className="text-base">Synonyms</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="space-y-3 font-eczar">
                 {data.synonymsEnglish?.filter(Boolean).length > 0 && (
                   <div>
                     <p className="text-sm font-medium mb-2">English:</p>

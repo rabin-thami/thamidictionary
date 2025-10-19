@@ -143,4 +143,77 @@ export const WordFormSchema = z.object({
 
 export type WordFormData = z.infer<typeof WordFormSchema>;
 
-export { partOfSpeechEnum, wordCategoryEnum };
+export { partOfSpeechEnum, wordCategoryEnum, searchLanguageEnum };
+
+enum searchLanguageEnum {
+  english = "english",
+  nepali = "nepali",
+  thami = "thami",
+}
+
+export const homePageSearchSchema = z.object({
+  query: z.string().min(1, { message: "Please enter a search term" }),
+  searchLanguage: z.nativeEnum(searchLanguageEnum, {
+    // @ts-ignore
+    required_error: "Please select a part of speech",
+  }),
+});
+
+export const settingsSchema = z.object({
+  name: z.string().min(2, { message: "Please enter a valid name" }),
+  email: z
+    .string()
+    .email({ message: "Please enter a valid email address" })
+    .refine(
+      (email) => {
+        const domain = email.split("@")[1];
+        return mainstreamEmailProviders.includes(domain);
+      },
+      {
+        message: "Only mainstream emails are allowed.",
+      },
+    ),
+  currentPassword: z.string().optional(),
+  newPassword: z
+    .string()
+    .optional()
+    .refine(
+      (password) => {
+        if (!password) return true; // If password is not provided, skip validation
+        return (
+          password.length >= 8 &&
+          password.length <= 32 &&
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>\/?]).+$/.test(
+            password
+          )
+        );
+      },
+      {
+        message:
+          "Password must be 8-32 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
+      },
+    ),
+  confirmNewPassword: z.string().optional(),
+}).refine(
+  (data) => {
+    if (data.newPassword && data.newPassword !== data.confirmNewPassword) {
+      return false;
+    }
+    return true;
+  },
+  {
+    message: "Passwords do not match",
+    path: ["confirmNewPassword"],
+  },
+).refine(
+  (data) => {
+    if (data.newPassword && !data.currentPassword) {
+      return false;
+    }
+    return true;
+  },
+  {
+    message: "Current password is required to set a new password",
+    path: ["currentPassword"],
+  },
+);

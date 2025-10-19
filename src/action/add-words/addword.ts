@@ -58,3 +58,22 @@ export const addWordAction = async (values: WordFormData) => {
 
   return { success: "Word added successfully!", redirect: "/words" };
 };
+
+export const deleteWordAction = async (id: string) => {
+  const session = await auth();
+  if (!session?.user || !session.user.id) return { error: "Unauthorized!" };
+
+  if (!id) return { error: "Invalid id!" };
+
+  try {
+    await db.word.delete({
+      where: { id },
+    });
+    return { success: "Word deleted successfully!" };
+  } catch (e: any) {
+    if (e?.code === "P2025") {
+      return { error: "Word not found or already deleted." };
+    }
+    return { error: "Failed to delete word. Please try again." };
+  }
+};

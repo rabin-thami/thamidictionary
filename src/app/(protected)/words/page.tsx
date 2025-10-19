@@ -15,10 +15,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Edit, Trash2, Search, Plus, Loader2, X } from "lucide-react";
+import {
+  MoreHorizontal,
+  Edit,
+  Trash2,
+  Search,
+  Plus,
+  Loader2,
+  X,
+} from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Fragment, useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   Pagination,
@@ -28,6 +37,8 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { deleteWordAction } from "@/action";
+import { toast } from "sonner";
 
 // Types that match the API/Prisma model
 type Word = {
@@ -47,6 +58,8 @@ type Word = {
 const Words = () => {
   const router = useRouter();
 
+  const [isPending, startTransition] = useTransition();
+
   const [words, setWords] = useState<Word[]>([]);
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
@@ -58,11 +71,24 @@ const Words = () => {
   const [error, setError] = useState<string | null>(null);
 
   const handleEdit = (id: string) => {
-    alert("Edit word with ID: " + id);
+    router.push(`/words/${id}/edit`);
   };
 
   const handleDelete = (id: string) => {
-    alert("Delete word with ID: " + id);
+    // Optimistic UI update with rollback on error
+    const prev = words;
+    setWords((w) => w.filter((x) => x.id !== id));
+
+    startTransition(async () => {
+      const res = await deleteWordAction(id);
+      if (res && "error" in res) {
+        // Rollback
+        setWords(prev);
+        toast.error(res.error || "Failed to delete word");
+      } else {
+        toast.success((res as any)?.success || "Word deleted successfully");
+      }
+    });
   };
 
   const handleWordLink = (id: string) => {
@@ -131,11 +157,14 @@ const Words = () => {
   }, [totalPages]);
 
   return (
-  <div className="space-y-3">
+    <div className="space-y-3">
       <div className="flex items-start justify-between gap-2">
         <div className="space-y-1">
           <h1 className="text-xl font-semibold">Your Words</h1>
-          <p className="text-sm text-muted-foreground">Manage your dictionary entries. Search, view, and edit your saved words.</p>
+          <p className="text-sm text-muted-foreground">
+            Manage your dictionary entries. Search, view, and edit your saved
+            words.
+          </p>
         </div>
         <div>
           <Button
@@ -210,7 +239,9 @@ const Words = () => {
       {(appliedSearch || total) && (
         <div className="-mt-2 text-xs text-muted-foreground">
           {appliedSearch ? (
-            <>Showing results for "{appliedSearch}" — {total} found</>
+            <>
+              Showing results for "{appliedSearch}" — {total} found
+            </>
           ) : (
             <>{total} total words</>
           )}
@@ -228,19 +259,29 @@ const Words = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {loading && (
-              <TableRow>
-                <TableCell
-                  colSpan={5}
-                  className="text-center text-sm text-muted-foreground"
-                >
-                  <span className="inline-flex items-center gap-2 justify-center">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Loading...
-                  </span>
-                </TableCell>
-              </TableRow>
-            )}
+            {loading &&
+              Array.from({ length: 5 }).map((_, i) => (
+                <TableRow key={`skeleton-${i.toFixed()}`}>
+                  <TableCell>
+                    <Skeleton className="h-4 w-40" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-24" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-72" />
+                  </TableCell>
+                  <TableCell>
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-5/6" />
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-8 w-8 rounded-md" />
+                  </TableCell>
+                </TableRow>
+              ))}
             {!loading && error && (
               <TableRow>
                 <TableCell
@@ -270,23 +311,31 @@ const Words = () => {
                   <TableRow key={w.id}>
                     <TableCell
                       onClick={() => handleWordLink(w.id)}
-                      className="hover:cursor-pointer underline underline-offset-2"
+                      className="hover:cursor-pointer"
                     >
                       <div className="flex flex-col space-y-1 text-sm text-muted-foreground font-eczar">
-                        <div className="font-semibold">{w.wordEnglish}</div>
+                        <span className="underline underline-offset-2 font-medium text-[1rem] capitalize hover:text-primary hover:underline">
+                          {w.wordEnglish}
+                        </span>
                       </div>
                     </TableCell>
 
                     <TableCell className="capitalize">
                       {w.partOfSpeech}
                     </TableCell>
-                    <TableCell>{w.definitionEnglish}</TableCell>
+                    <TableCell>
+                      {w.definitionEnglish.split(" ").slice(0, 8).join(" ")}
+                      {w.definitionEnglish.split(" ").length > 8 && " ...."}
+                    </TableCell>
+
                     <TableCell>
                       <table className="w-full text-sm">
                         <tbody>
                           {englishExamples.map((ex, i) => (
-                            <tr key={i.toFixed()} className="border-b last:border-0">
-                              <td className="pr-2 font-semibold">EN</td>
+                            <tr
+                              key={i.toFixed()}
+                              className="border-b last:border-0"
+                            >
                               <td className="font-eczar">{ex}</td>
                             </tr>
                           ))}
@@ -309,6 +358,7 @@ const Words = () => {
                           <DropdownMenuItem
                             onClick={() => handleDelete(w.id)}
                             className="text-destructive"
+                            disabled={isPending}
                           >
                             <Trash2 className="mr-2 h-4 w-4" />
                             Delete
@@ -326,7 +376,9 @@ const Words = () => {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="mt-4 flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">{total} results • Page {page} of {totalPages}</div>
+          <div className="text-sm text-muted-foreground">
+            {total} results • Page {page} of {totalPages}
+          </div>
           <Pagination>
             <PaginationContent>
               <PaginationItem>

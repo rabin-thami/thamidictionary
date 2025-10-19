@@ -1,36 +1,42 @@
 "use client";
 
-import { useTransition, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
+
+import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Form } from "@/components/ui/form";
-import { WordFormSchema, type WordFormData } from "@/schema/indexSchema";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+import { WordFormSchema, type WordFormData } from "@/schema/indexSchema";
 import { StepOne } from "@/protected-components/word-form/step-one";
 import { StepTwo } from "@/protected-components/word-form/step-two";
 import { StepThree } from "@/protected-components/word-form/step-three";
 import { StepFour } from "@/protected-components/word-form/step-four";
 import { StepFive } from "@/protected-components/word-form/step-five";
 import { StepSix } from "@/protected-components/word-form/step-six";
-import { addWordAction } from "@/action";
-
-import { toast } from "sonner";
+import { updateWordAction } from "@/action";
 
 const steps = [
-  { id: 1, name: "Words" }, //description: "Enter words in all languages"
-  { id: 2, name: "Classification" }, //description: "Part of speech & category"
-  { id: 3, name: "Definitions" }, //description: "Define in all languages"
-  { id: 4, name: "Examples" }, // description: "Add usage examples"
-  { id: 5, name: "Synonyms" }, // description: "Add synonyms (optional)"
-  { id: 6, name: "Review" }, //description: "Review and submit"
+  { id: 1, name: "Words" },
+  { id: 2, name: "Classification" },
+  { id: 3, name: "Definitions" },
+  { id: 4, name: "Examples" },
+  { id: 5, name: "Synonyms" },
+  { id: 6, name: "Review" },
 ];
 
-const WordStepperForm = () => {
+export default function EditWordPage() {
+  const router = useRouter();
+  const params = useParams();
+  const id = Array.isArray(params?.id) ? params.id[0] : (params?.id as string);
+
   const [currentStep, setCurrentStep] = useState(1);
+  const [loading, setLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<WordFormData>({
@@ -39,6 +45,8 @@ const WordStepperForm = () => {
       wordEnglish: "",
       wordNepali: "",
       wordThami: "",
+      partOfSpeech: undefined as any,
+      category: undefined as any,
       definitionEnglish: "",
       definitionNepali: "",
       definitionThami: "",
@@ -52,16 +60,72 @@ const WordStepperForm = () => {
     mode: "onChange",
   });
 
+  useEffect(() => {
+    let ignore = false;
+    async function fetchWord() {
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/words?id=${encodeURIComponent(id)}`);
+        if (!res.ok) throw new Error("Failed to load");
+        const json = await res.json();
+        const w = json?.data as any;
+        if (!w) throw new Error("Not found");
+
+        const toArray = (v: any): string[] => {
+          if (Array.isArray(v)) return v.map((x) => String(x));
+          if (typeof v === "string")
+            return v
+              .split(",")
+              .map((x) => x.trim())
+              .filter(Boolean);
+          return [];
+        };
+
+        const defaults: WordFormData = {
+          wordEnglish: w.wordEnglish || "",
+          wordNepali: w.wordNepali || "",
+          wordThami: w.wordThami || "",
+          partOfSpeech: w.partOfSpeech,
+          category: w.category,
+          definitionEnglish: w.definitionEnglish || "",
+          definitionNepali: w.definitionNepali || "",
+          definitionThami: w.definitionThami || "",
+          examplesEnglish: toArray(w.examplesEnglish).length
+            ? toArray(w.examplesEnglish)
+            : [""],
+          examplesNepali: toArray(w.examplesNepali).length
+            ? toArray(w.examplesNepali)
+            : [""],
+          examplesThami: toArray(w.examplesThami).length
+            ? toArray(w.examplesThami)
+            : [""],
+          synonymsEnglish: toArray(w.synonymsEnglish),
+          synonymsNepali: toArray(w.synonymsNepali),
+          synonymsThami: toArray(w.synonymsThami),
+        };
+
+        if (!ignore) form.reset(defaults);
+      } catch (e: any) {
+        if (!ignore) toast.error(e?.message || "Failed to load word");
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    }
+    if (id) fetchWord();
+    return () => {
+      ignore = true;
+    };
+  }, [id, form.reset]);
+
   const onSubmit = async (values: WordFormData) => {
     startTransition(() => {
-      addWordAction(values).then((data) => {
+      updateWordAction(id, values).then((data) => {
         if (data?.error) {
-          // setMessage({ type: "error", message: data.error || "" });
           toast.error(data.error);
-        } else if (data?.success && data?.redirect) {
+        } else if (data?.success) {
           toast.success(data.success);
-          // Redirect after successful login
-          window.location.href = data.redirect;
+          const redirect = (data as any).redirect || `/words/${id}`;
+          router.push(redirect);
         }
       });
     });
@@ -69,7 +133,6 @@ const WordStepperForm = () => {
 
   const nextStep = async () => {
     let fieldsToValidate: (keyof WordFormData)[] = [];
-
     switch (currentStep) {
       case 1:
         fieldsToValidate = ["wordEnglish", "wordNepali", "wordThami"];
@@ -99,22 +162,16 @@ const WordStepperForm = () => {
         ];
         break;
     }
-
     const isValid = await form.trigger(fieldsToValidate);
-    if (isValid) {
-      setCurrentStep((prev) => Math.min(prev + 1, steps.length));
-    }
+    if (isValid) setCurrentStep((prev) => Math.min(prev + 1, steps.length));
   };
 
-  const prevStep = () => {
-    setCurrentStep((prev) => Math.max(prev - 1, 1));
-  };
+  const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
 
   return (
     <div className="w-full mx-auto p-4 sm:p-6">
       <Card>
         <CardContent>
-          {/* Stepper Navigation */}
           <nav aria-label="Progress" className="mb-8 overflow-x-auto">
             <ol className="flex items-center justify-between min-w-max sm:min-w-0">
               {steps.map((step, index) => (
@@ -171,7 +228,6 @@ const WordStepperForm = () => {
             </ol>
           </nav>
 
-          {/* Form Steps */}
           <Form {...form}>
             <div className="space-y-6">
               <div className="max-h-[60vh] overflow-y-auto pr-2">
@@ -183,7 +239,6 @@ const WordStepperForm = () => {
                 {currentStep === 6 && <StepSix form={form} />}
               </div>
 
-              {/* Navigation Buttons */}
               <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0 pt-10 border-t">
                 <Button
                   type="button"
@@ -199,17 +254,18 @@ const WordStepperForm = () => {
                     type="button"
                     onClick={nextStep}
                     className="w-full sm:w-auto"
+                    disabled={loading}
                   >
                     Next
                   </Button>
                 ) : (
                   <Button
                     type="button"
-                    disabled={isPending}
+                    disabled={isPending || loading}
                     onClick={form.handleSubmit(onSubmit)}
                     className="w-full sm:w-auto"
                   >
-                    {isPending ? "Submitting..." : "Submit"}
+                    Save Changes
                   </Button>
                 )}
               </div>
@@ -219,6 +275,4 @@ const WordStepperForm = () => {
       </Card>
     </div>
   );
-};
-
-export default WordStepperForm;
+}

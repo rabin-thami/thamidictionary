@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 const menuItems = [
   { name: "Home", link: "/" },
@@ -13,24 +14,39 @@ const menuItems = [
 ];
 
 const Navbar = () => {
-  const [isToggle, setIsToggle] = useState<boolean>(false);
+  const { data: session, status } = useSession();
+  const [isToggle, setIsToggle] = useState(false);
 
   const handleToggle = () => setIsToggle(!isToggle);
+
+  // Determine if the user is logged in
+  const isAuthenticated = status === "authenticated";
+
+  // Replace "Login" with "Dashboard" dynamically
+  const menu = menuItems.map((item) => {
+    if (item.name === "Login" && isAuthenticated) {
+      return { name: "Dashboard", link: "/dashboard" };
+    }
+    return item;
+  });
+
   return (
     <nav className="flex justify-between p-4 w-full shadow items-center">
       <div>
-        <span className="font-medium text-lg sm:text-xl">Thami Dictionary</span>
+        <Link href="/" className="font-medium text-lg sm:text-xl">
+          Thami Dictionary
+        </Link>
       </div>
 
       {/* ==== Desktop Nav ====*/}
       <div className="hidden md:flex gap-4 lg:gap-6 items-center">
-        {menuItems.map((item) => (
+        {menu.map((item) => (
           <Link
             href={item.link}
             key={item.name}
             className="hover:text-primary transition-all duration-150 text-sm lg:text-base"
           >
-            {item.name === "Login" ? (
+            {item.name === "Login" || item.name === "Dashboard" ? (
               <Button size="default" className="rounded-sm">
                 {item.name}
               </Button>
@@ -47,22 +63,17 @@ const Navbar = () => {
         className="hover:cursor-pointer md:hidden h-6 w-6"
       />
 
-      {/* Backdrop overlay with blur */}
+      {/* Backdrop overlay */}
       {isToggle && (
         <button
           type="button"
           className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[40] transition-opacity duration-300 cursor-default md:hidden"
           onClick={handleToggle}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              handleToggle();
-            }
-          }}
           aria-label="Close navigation menu"
         />
       )}
 
+      {/* ==== Mobile Drawer ====*/}
       <div
         className={`fixed h-screen right-0 top-0 bg-background drop-shadow-xl transition-transform transform z-[50] ${
           isToggle ? "translate-x-0" : "translate-x-full"
@@ -75,16 +86,17 @@ const Navbar = () => {
             className="text-foreground hover:text-primary hover:cursor-pointer transition-colors duration-150 h-6 w-6"
           />
         </span>
+
         <div className="font-semibold p-6">
           <div className="flex flex-col gap-3">
-            {menuItems.map((item) => (
+            {menu.map((item) => (
               <Link
                 href={item.link}
                 key={item.name}
                 className="hover:text-primary transition-all duration-150 text-foreground text-lg py-2"
                 onClick={handleToggle}
               >
-                {item.name === "Login" ? (
+                {item.name === "Login" || item.name === "Dashboard" ? (
                   <Button className="w-full">{item.name}</Button>
                 ) : (
                   item.name

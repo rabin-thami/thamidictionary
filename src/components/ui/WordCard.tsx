@@ -1,15 +1,15 @@
 "use client";
-import { Volume2, Mic, Info, Quote, List } from "lucide-react";
+import { Volume2, Quote, List } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import type { WordCardProps } from "@/types";
+import { Badge } from "@/ui/badge";
 
 const WordCard = ({
   word,
   definition,
   part_of_speech,
   examples,
-  pronunciation,
   synonyms,
 }: WordCardProps) => {
   return (
@@ -35,45 +35,51 @@ const WordCard = ({
         </Button>
       </CardHeader>
 
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-3 font-eczar">
         {definition && definition.length > 0 && (
           <div className="flex items-center">
             <p>{definition}</p>
           </div>
         )}
-        {/*synonyms*/}
-        {synonyms && synonyms.length > 0 && (
-          <div className="flex items-center">
-            <span className="font-medium text-sm sm:text-base inline-flex items-center gap-2">
-              <List
-                className="h-4 w-4 text-muted-foreground"
-                aria-hidden="true"
-              />
-              Synonyms:
-            </span>
-            <span className="text-sm px-2">{synonyms.join(", ")}</span>
-          </div>
-        )}
 
-        {/*example*/}
-        {examples && examples.length > 0 && (
-          <div className="">
-            <span className="font-medium text-sm sm:text-base inline-flex items-center gap-2">
-              <Quote
-                className="h-4 w-4 text-muted-foreground"
-                aria-hidden="true"
-              />
-              Examples:
-            </span>
-            <ul className="list-disc list-inside text-sm ml-8 space-y-1">
+        <div className="mb-4">
+          <span className="font-medium inline-flex items-center gap-2">
+            <Quote className="h-4 w-4 text-muted-foreground" />
+            Examples
+          </span>
+          {examples && examples.length > 0 ? (
+            <ul className="list-disc list-inside text-sm mt-2 space-y-1 pl-8">
               {examples.map((example, index) => (
                 <li key={index.toFixed()} className="italic break-words">
                   {example}
                 </li>
               ))}
             </ul>
-          </div>
-        )}
+          ) : (
+            <p className="text-sm text-muted-foreground mt-2">No examples</p>
+          )}
+        </div>
+        <div>
+          <span className="font-medium inline-flex items-center gap-2">
+            <List className="h-4 w-4 text-muted-foreground" />
+            Synonyms{" "}
+          </span>
+          {synonyms && synonyms.length > 0 ? (
+            <div className="flex flex-wrap gap-2 mt-2 pl-8">
+              {synonyms.map((syn, index) => (
+                <Badge
+                  key={index.toFixed()}
+                  variant="secondary"
+                  className="text-xs"
+                >
+                  {syn}
+                </Badge>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground mt-2">No synonyms</p>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

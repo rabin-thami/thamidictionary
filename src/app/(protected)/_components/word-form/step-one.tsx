@@ -52,7 +52,11 @@ export const StepOne = ({ form }: StepOneProps) => {
                   Thami Word <span className="font-eczar">(थामी शब्द)</span>*
                 </FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter word in Thami" {...field} />
+                  <Input
+                    placeholder="Enter word in Thami"
+                    {...field}
+                    className="font-eczar"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

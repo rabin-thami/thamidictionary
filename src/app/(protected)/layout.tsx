@@ -39,7 +39,16 @@ export default async function Layout({
 
   return (
     <SidebarProvider>
-      <Toaster richColors position="top-center" closeButton />
+      <Toaster
+        richColors
+        position="top-right"
+        toastOptions={{
+          style: {
+            fontFamily: "var(--font-space-grotesk), sans-serif)",
+            fontSize: "0.9rem",
+          },
+        }}
+      />
       <Sidebar variant="inset" collapsible="icon">
         <SidebarHeader>
           <div className="flex items-center gap-2 py-2">
